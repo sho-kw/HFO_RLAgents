@@ -85,10 +85,12 @@ class DDQNAgent(AbstractAgent):
     def _gen_training_data(self):
             states, actions, next_states, rewards, cont_flags = self.memory.sample(self.batch_size)
             pred_a = self.main_core_model.predict(next_states)
-            max_a = np.max(pred_a, axis=-1)  # 最大の報酬を返す行動を選択する
+            max_a = np.argmax(pred_a, axis = -1)  # 最大の報酬を返す行動を選択する
             inputs = [states, actions]
             pred_Q = self.target_core_model.predict(next_states)
-            max_Q = np.max(pred_Q, axis=-1)
+            max_Q = []
+            for i in range (self.batch_size):
+                max_Q.append(pred_Q[i][max_a[i]])
             targets = rewards + cont_flags * self.gamma * max_Q
             return inputs, targets
     def _train(self):
