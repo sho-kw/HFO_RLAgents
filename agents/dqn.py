@@ -93,10 +93,6 @@ class DQNAgent(AbstractAgent):
         max_Q = np.max(pred_Q, axis=-1)
         inputs = [states, actions]
         targets = rewards + cont_flags * self.gamma * max_Q
-        print("param")
-        print(pred_Q)
-        print("param2")
-        print(max_Q)
         return inputs, targets
     def _sync_target_model(self):
         if self.target_model_update != 1:

@@ -8,7 +8,7 @@ from .core import AbstractAgent
 from ..memory import SingleActionMemory
 from ..policy import Greedy
 
-class DQNAgent(AbstractAgent):
+class DDQNAgent(AbstractAgent):
     def __init__(self,
                  action_space,
                  core_model,
@@ -84,10 +84,12 @@ class DQNAgent(AbstractAgent):
     # training
     def _gen_training_data(self):
             states, actions, next_states, rewards, cont_flags = self.memory.sample(self.batch_size)
-            pred_Q = self.main_core_model.predict(next_states)
-            max_Q = np.max(pred_Q, axis=-1)  # 最大の報酬を返す行動を選択する
+            pred_a = self.main_core_model.predict(next_states)
+            max_a = np.max(pred_a, axis=-1)  # 最大の報酬を返す行動を選択する
             inputs = [states, actions]
-            targets = rewards + cont_flags * self.gamma * self.target_core_model.predict(next_states)
+            pred_Q = self.target_core_model.predict(next_states)
+            max_Q = np.max(pred_Q, axis=-1)
+            targets = rewards + cont_flags * self.gamma * max_Q
             return inputs, targets
     def _train(self):
         if self.warmup < self.memory._get_current_size():# Qネットワークの重みを学習・更新する replay

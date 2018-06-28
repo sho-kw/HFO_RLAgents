@@ -1,3 +1,4 @@
+import numpy as np
 class SingleActionMemory:
     def __init__(self, capacity, state_shape, continuous_action=False):
         self.capacity = capacity
